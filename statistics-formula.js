@@ -19,7 +19,7 @@ function checkProperty (arrayOfObjects, propertyToSortBy){
     console.log("successfully passed check for existence of property in all objects in array");
 }
 
-function mergeSort(arrayOfObjects, propertyToSortBy){
+function mergeSortByProperty(arrayOfObjects, propertyToSortBy){
 
     if(arrayOfObjects.length <= 1){
         return arrayOfObjects;
@@ -28,8 +28,8 @@ function mergeSort(arrayOfObjects, propertyToSortBy){
     let targetProperty = propertyToSortBy;
 
     let middleIndex = Math.floor(arrayOfObjects.length / 2);
-    let left = mergeSort(arrayOfObjects.slice(0,middleIndex), targetProperty);
-    let right = mergeSort(arrayOfObjects.slice(middleIndex), targetProperty);
+    let left = mergeSortByProperty(arrayOfObjects.slice(0,middleIndex), targetProperty);
+    let right = mergeSortByProperty(arrayOfObjects.slice(middleIndex), targetProperty);
 
     let sortedValues = [];
 
@@ -76,7 +76,7 @@ let test1 = [
 // checkProperty(test2, "meow1");
 // checkProperty(test1, "meow3");
 
-let sortedArray = mergeSort(test1, "meow3")
+let sortedArray = mergeSortByProperty(test1, "meow3")
 
 function rankByPropertySmallestFirst(sortedArrayOfObjects, propertyToRankBy, idOfObjectRecevingRank){
 
