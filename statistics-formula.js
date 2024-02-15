@@ -1,8 +1,4 @@
 
-// 1st parameter expects an array of object
-// 2nd parameter expects a string matching object key in array of object
-
-
 function checkProperty (arrayOfObjects, propertyToSortBy){
 
     let errorCatchingIndex;
@@ -125,4 +121,60 @@ function rankByPropertyBiggestFirst(sortedArrayOfObjects, propertyToRankBy, idOf
     }
 }
 
-rankByPropertyBiggestFirst(sortedArray, "meow3", 2);
+// rankByPropertyBiggestFirst(sortedArray, "meow3", 2);
+
+// expects an int for percentile between 0-100;
+// 65th percentile can be defined as the lowest score that is greater than 65% of the scores (sorted smallest to biggest is just nice)
+// we assume method1 of handling percentile, which is the stricter cut off
+
+function retrieveIndexByPercentile(unsortedArrayOfObjects, percentile, propertyToSortBy){
+
+    let targetArray = unsortedArrayOfObjects;
+    let targetProperty = propertyToSortBy;
+    mergeSortByProperty(targetArray, targetProperty);
+
+    let targetPercentile = percentile;
+    let arrayLength = targetArray.length;
+
+    if (arrayLength === 0){
+        console.log("Dataset is empty, please enter valid array");
+        return;
+    }
+    if (targetPercentile <= 0 || targetPercentile > 100){
+        console.log("target percentile needs be greater than 0 and smaller/equal to 100");
+    }
+
+    let index = Math.ceil((percentile / 100) * (arrayLength - 1)); // we will not use arrayLength + 1 because index starts from 0
+    
+    console.log(`The index at ${percentile} percentile is index ${index}`);
+    console.log(`THe value at the ${percentile} percentile is ${targetArray[index][targetProperty]}`);
+
+    return index;
+}
+
+// retrieveIndexByPercentile(sortedArray, 25, "meow3");
+// retrieveIndexByPercentile(sortedArray, 50, "meow3");
+// retrieveIndexByPercentile(sortedArray, 75, "meow3");
+// retrieveIndexByPercentile(sortedArray, 0, "meow3");
+// retrieveIndexByPercentile(sortedArray, 100, "meow3");
+
+function retrieveDataByPercentile(unsortedArrayOfObjects, percentile, propertyToSortBy){
+
+    let targetArray = unsortedArrayOfObjects;
+    let targetProperty = propertyToSortBy;
+    let targetPercentile = percentile;
+
+    let targetIndex = retrieveIndexByPercentile(targetArray, targetPercentile, targetProperty);
+
+    let arrangedArray = mergeSortByProperty(unsortedArrayOfObjects, targetProperty);
+    
+    let itemsInPercentile = arrangedArray.slice(targetIndex);
+    console.log(itemsInPercentile);
+
+    return itemsInPercentile;
+}
+
+retrieveDataByPercentile(test1, 25, "meow3");
+
+
+
