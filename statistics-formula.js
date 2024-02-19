@@ -51,29 +51,6 @@ function mergeSortByProperty(arrayOfObjects, propertyToSortBy){
     return sortedValues;
 }
 
-let test1 = [
-                {"id":1, "meow3": 3997, "meow1": 500, "meow2": 1000},
-                {"id":2, "meow3": 4001, "meow1": 500, "meow2": 1000},
-                {"id":3, "meow3": 3998, "meow1": 500, "meow2": 1000},
-                {"id":4, "meow3": 3996, "meow1": 500, "meow2": 1000},
-                {"id":5, "meow3": 4000, "meow1": 500, "meow2": 1000},           
-                {"id":6, "meow3": 3999, "meow1": 500, "meow2": 1000},
-            ]
-
-// let test2 = [
-//     {"meow3": 3997, "meow1": 500, "meow2": 1000},
-//     {"meow3": 4001, "meow1": 500, "meow2": 1000},
-//     {"meow3": 3998, "meow1": 500, "meow2": 1000},
-//     {"meow3": 3996, "meow1": 500, "meow2": 1000},
-//     {"meow3": 4000, "meow1": 500, "meow2": 1000},           
-//     {"meow3": 3999, "meow1": 500},
-// ]
-
-// checkProperty(test2, "meow1");
-// checkProperty(test1, "meow3");
-
-let sortedArray = mergeSortByProperty(test1, "meow3")
-
 function rankByPropertySmallestFirst(sortedArrayOfObjects, propertyToRankBy, idOfObjectRecevingRank){
 
     let targetProperty = propertyToRankBy;
@@ -94,8 +71,6 @@ function rankByPropertySmallestFirst(sortedArrayOfObjects, propertyToRankBy, idO
         return;
     }
 }
-
-// rankByPropertySmallestFirst(sortedArray, "meow3", 2);
 
 function rankByPropertyBiggestFirst(sortedArrayOfObjects, propertyToRankBy, idOfObjectRecevingRank){
 
@@ -121,11 +96,8 @@ function rankByPropertyBiggestFirst(sortedArrayOfObjects, propertyToRankBy, idOf
     }
 }
 
-// rankByPropertyBiggestFirst(sortedArray, "meow3", 2);
-
 // expects an int for percentile between 0-100;
 // 65th percentile can be defined as the lowest score that is greater than 65% of the scores (sorted smallest to biggest is just nice)
-// we assume method1 of handling percentile, which is the stricter cut off
 
 function retrieveIndexByPercentile(unsortedArrayOfObjects, percentile, propertyToSortBy){
 
@@ -152,12 +124,6 @@ function retrieveIndexByPercentile(unsortedArrayOfObjects, percentile, propertyT
     return index;
 }
 
-// retrieveIndexByPercentile(sortedArray, 25, "meow3");
-// retrieveIndexByPercentile(sortedArray, 50, "meow3");
-// retrieveIndexByPercentile(sortedArray, 75, "meow3");
-// retrieveIndexByPercentile(sortedArray, 0, "meow3");
-// retrieveIndexByPercentile(sortedArray, 100, "meow3");
-
 function retrieveDataByPercentile(unsortedArrayOfObjects, percentile, propertyToSortBy){
 
     let targetArray = unsortedArrayOfObjects;
@@ -174,7 +140,45 @@ function retrieveDataByPercentile(unsortedArrayOfObjects, percentile, propertyTo
     return itemsInPercentile;
 }
 
-retrieveDataByPercentile(test1, 25, "meow3");
+// expects array where elements arranged in chronological order with latest at the end of array.
+// expects time between each element to be 1 unit
+// will slice the last few units when applying a 5 year or 5 unit latest trend
+function linearRegressionOneUnitTimeDistance(timeSeriesArray){
+
+    let targetArray = timeSeriesArray;
+
+    let xSum;
+    let timeContainer = [];
+    for (let i=1; i <= targetArray.length; i++){
+        xSum += i;
+        timeContainer.push(i);
+    }
+    let xAverage = xSum / targetArray.length;
+
+    let ySum = targetArray.reduce((accumulator, currentValue)=> accumulator + currentValue, 0);
+    let yAverage = ySum / targetArray.length;
+
+    let aggregateTop;
+    let aggregateDenominator;
+
+    for (let i=0; i < targetArray.length; i++){
+
+        let xDifference = timeContainer[i] - xAverage;
+        let xDifferenceSquared = (timeContainer[i] - xAverage)**2;
+        let yDifference = targetArray[i] - yAverage;
+        let topCalc = xDifference * yDifference
+        aggregateTop += topCalc;
+        aggregateDenominator += xDifferenceSquared;
+    }
+
+    let slope = aggregateTop / aggregateDenominator;
+    console.log(`Average rate of change in last ${targetArray.length} time units is ${slope}`)
+    return slope;
+}
+
+
+let meow = [1,5,7,3,4,7,8,10,11,13,3]
+
 
 
 
