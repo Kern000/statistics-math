@@ -1,5 +1,4 @@
 
-
     function checkProperty (arrayOfObjects, propertyToSortBy){
 
         let errorCatchingIndex;
@@ -209,7 +208,6 @@
         }
     }
 
-    // let meow3 = [1,2,2,4,5,6,7,7,7,9,9,9,10];
 
     function mode (arrayOfData){
         let targetArray = arrayOfData;
@@ -245,7 +243,17 @@
         return mode;
     }
 
+    function standardDeviationPopulation(arrayOfData){
 
+        let popMean = mean(arrayOfData);
+        let accumulator = 0;
+        for (let item of arrayOfData){
+            let itemToSum = (item - popMean)**2;
+            accumulator += itemToSum;
+        }
+        let standardDeviationPopulation = Math.sqrt(accumulator/arrayOfData.length);
+        return standardDeviationPopulation;
+    }
 
 
 module.exports={
@@ -258,7 +266,8 @@ module.exports={
     sumOfArray,
     mean,
     median,
-    mode
+    mode,
+    standardDeviationPopulation
 }
 
 
