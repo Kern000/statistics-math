@@ -288,6 +288,35 @@
         return standardDeviationPopulation;
     }
 
+    function standardDeviationSample(arrayOfData){
+        let popMean = mean(arrayOfData);
+        let accumulator = 0;
+        for (let item of arrayOfData){
+            let itemToSum = (item - popMean)**2;
+            accumulator += itemToSum;
+        }
+        let standardDeviationPopulation = Math.sqrt(accumulator/(arrayOfData.length - 1));
+        return standardDeviationPopulation;
+    }
+
+    function standardDeviationForNestedProperty(arrayOfObjects, targetedProperty){
+
+        let targetArrayOfObjects = arrayOfObjects;
+        let totalForMeanCalc = 0;
+        for (let i=0; i < targetArrayOfObjects.length; i++){
+            totalForMeanCalc += targetArrayOfObjects[i][targetedProperty];
+        }
+        let meanOfTargetProperty = totalForMeanCalc / targetArrayOfObjects.length;
+        
+        let numeratorAccumulator = 0;
+        for (let i=0; i < arrayOfObjects.length; i++){
+            let itemToSum = (arrayOfObjects[i][targetedProperty] - meanOfTargetProperty) ** 2
+            numeratorAccumulator += itemToSum;
+        }
+        const standardDeviationForNestedProperty = Math.sqrt(numeratorAccumulator/(arrayOfObjects.length));
+
+        return standardDeviationForNestedProperty;
+    }
 
 
 
@@ -317,7 +346,7 @@
     // }
 
 
-    // Need to test and also refactor ---> got alot of wasted codes, need to create output
+    // Need to finish up and test and also refactor ---> got alot of wasted codes, need to create output
     function simpleTwoNominalCategoryBoxPlot(unsortedArray1, unsortedArray2){
 
         let array1 = unsortedArray1;
@@ -409,6 +438,8 @@ module.exports={
     median,
     mode,
     standardDeviationPopulation,
+    standardDeviationSample,
+    standardDeviationForNestedProperty,
     rangeOfArrayOfObjects,
     simpleRange,
     
