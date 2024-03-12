@@ -479,7 +479,69 @@
 
     }
 
+    function trimeanWithProperty(unSortedObjectArray, targetedProperty, weight25=1, weight50=1, weight75=1){
 
+        const targetArray = unSortedObjectArray;
+        const targetProperty = targetedProperty;
+
+        let sortedArray = mergeSortByProperty(targetArray, targetProperty);
+
+        let filteredArray = [];
+        for (let sortedItem of sortedArray){
+            filteredArray.push(sortedItem[targetProperty]);
+        }
+
+        const arrayLength = filteredArray.length
+
+        const indexOf25Percentile = Math.ceil((25 / 100) * (arrayLength - 1));
+        const indexOf50Percentile = Math.ceil((50 / 100) * (arrayLength - 1));
+        const indexOf75Percentile = Math.ceil((75 / 100) * (arrayLength - 1));
+
+        const sumOfWeight = weight25 + weight50 + weight75;
+        
+        const trimean = (filteredArray[indexOf25Percentile] * weight25 + filteredArray[indexOf50Percentile] * weight50 + filteredArray[indexOf75Percentile] * weight75) / sumOfWeight
+        console.log("property filtered trimean", trimean);
+        return trimean;
+
+    }
+
+    function geometricMean(unSortedArray){
+
+        let targetArray = unSortedArray;
+        let sortedSimpleArray = simpleArrayMergeSort(targetArray);
+        let arrayLength = sortedSimpleArray.length;
+
+        let multiplyAccumulator = 1;
+        for (let i=0; i < arrayLength; i++){
+            multiplyAccumulator = multiplyAccumulator * sortedSimpleArray[i];
+        }
+    
+        let geometricalMean = Math.pow(multiplyAccumulator, 1/arrayLength);
+        return geometricalMean;
+    }
+
+    function geometricMeanWithProperty(unSortedObjectArray, property){
+        
+        const targetArray = unSortedObjectArray;
+        const targetProperty = property;
+        let sortedObjectArray = mergeSortByProperty(targetArray);
+
+        let filteredArray = [];
+        for (let object of sortedObjectArray){
+            filteredArray.push(object[targetProperty]); 
+        }
+
+        const arrayLength = filteredArray.length;
+
+        let multiplyAccumulator = 1;
+        for (let i=0; i < arrayLength; i++){
+            multiplyAccumulator = multiplyAccumulator * filteredArray[i];
+        }
+    
+        let geometricalMean = Math.pow(multiplyAccumulator, 1/arrayLength);
+        console.log(geometricalMean);
+        return geometricalMean;
+    }
 
 module.exports={
     checkProperty,
@@ -501,7 +563,9 @@ module.exports={
     boxPlotForNestedArray,
     simpleNominalBoxPlot,
     linearRegressionOneUnitTimeDistance,
-    trimean
+    trimean,
+    trimeanWithProperty,
+    geometricMean
 }
 
 const sampleArray = [
@@ -518,4 +582,4 @@ const simpleSampleArray = [
     64, 12, 53, 86, 97
 ];
 
-trimean(simpleSampleArray, 2, 1, 2)
+geometricMeanWithProperty(sampleArray, "fourth");
