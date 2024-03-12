@@ -83,7 +83,6 @@
         return sortedValues;
     }
 
-
     function rankByPropertySmallestFirst(sortedArrayOfObjects, propertyToRankBy, idOfObjectRecevingRank){
 
         let targetProperty = propertyToRankBy;
@@ -129,9 +128,6 @@
         }
     }
 
-    // expects an int for percentile between 0-100;
-    // 65th percentile can be defined as the lowest score that is greater than 65% of the scores (sorted smallest to biggest is just nice)
-
     function retrieveIndexByPercentile(unsortedArrayOfObjects, percentile, propertyToSortBy){
 
         let targetArray = unsortedArrayOfObjects;
@@ -173,9 +169,6 @@
         return itemsInPercentile;
     }
 
-    // expects array where elements arranged in chronological order with latest at the end of array.
-    // expects time between each element to be 1 unit
-    // will slice the last few units when applying a 5 year or 5 unit latest trend
     function linearRegressionOneUnitTimeDistance(timeSeriesArray){
 
         let targetArray = timeSeriesArray;
@@ -240,7 +233,6 @@
             return median;
         }
     }
-
 
     function mode (arrayOfData){
         let targetArray = arrayOfData;
@@ -318,8 +310,6 @@
         return standardDeviationForNestedProperty;
     }
 
-
-
     function rangeOfArrayOfObjects(arrayOfObjects, property){
 
         let sortedArray = mergeSortByProperty(arrayOfObjects, property);
@@ -347,15 +337,15 @@
 
         let arrayLength1 = sortedArray1.length;
 
-        let indexOf25PercentileForFirst = Math.ceil((25 / 100) * (arrayLength1 - 1));
-        let indexOf75PercentileForFirst = Math.ceil((75 / 100) * (arrayLength1 - 1));
+        let indexOf25Percentile = Math.ceil((25 / 100) * (arrayLength1 - 1));
+        let indexOf75Percentile = Math.ceil((75 / 100) * (arrayLength1 - 1));
 
         let median1 = median(sortedArray1);
         
         let dataSet1 = {};
         dataSet1["median"] = median1;
-        dataSet1["upperHinge"] = sortedArray1[indexOf75PercentileForFirst];
-        dataSet1["lowerHinge"] = sortedArray1[indexOf25PercentileForFirst];
+        dataSet1["upperHinge"] = sortedArray1[indexOf75Percentile];
+        dataSet1["lowerHinge"] = sortedArray1[indexOf25Percentile];
         dataSet1["hspread"] = dataSet1["upperHinge"] - dataSet1["lowerHinge"];
         dataSet1["step"] = 1.5 * dataSet1["hspread"];
         dataSet1["upperInnerFence"] = dataSet1["upperHinge"] + dataSet1["step"];
@@ -373,20 +363,14 @@
         let sortedModifiedArray = simpleArrayMergeSort(arrayToModify);
 
         let indexOfUpperAdj = sortedModifiedArray.indexOf(dataSet1["upperInnerFence"]) - 1;
-        console.log("length here", sortedModifiedArray.length)
-        console.log("index of upper adj here", indexOfUpperAdj);
+        
         let indexOfLowerAdj = sortedModifiedArray.indexOf(dataSet1["lowerInnerFence"]) + 1;
-        console.log("index of lower adj here", indexOfLowerAdj)
 
         let indexOfUpperOuterFence = sortedModifiedArray.indexOf(dataSet1["upperOuterFence"]);
-        console.log("index of upper outer fence", indexOfUpperOuterFence);
         let indexOfLowerOuterFence = sortedModifiedArray.indexOf(dataSet1["lowerOuterFence"]);
-        console.log("index of lower outer fence", indexOfLowerOuterFence);
             
         let outsideUpperValues = sortedModifiedArray.slice(indexOfUpperAdj + 1, indexOfUpperOuterFence);
-        console.log("outside upper values", outsideUpperValues);
         let outsideLowerValues = sortedModifiedArray.slice(indexOfLowerOuterFence, indexOfLowerAdj - 1);
-        console.log("outside lower values", outsideLowerValues);
 
         let farOutUpperValues = null;
         if (indexOfUpperOuterFence < sortedModifiedArray.length - 1){
@@ -405,10 +389,95 @@
         dataSet1["farOutUpperValues"] = farOutUpperValues;
         dataSet1["farOutLowerValues"] = farOutLowerValues;
 
-        console.log(dataSet1);
+        console.log("box plot for simple array", dataSet1)
         return dataSet1;
     }
 
+    function boxPlotForNestedArray(arrayOfObjects, property){
+
+        let unsortedArrayOfObjects = arrayOfObjects;
+        let targetProperty = property;
+
+        let sortedObjectArray = mergeSortByProperty(unsortedArrayOfObjects, targetProperty);
+        
+        let arrayWithSinglePropertyValues = [];
+
+        for (let object of sortedObjectArray){
+            arrayWithSinglePropertyValues.push(object[property])
+        }
+
+        let arrayLength = sortedObjectArray.length;
+
+        let indexOf25PercentileForFirst = Math.ceil((25 / 100) * (arrayLength - 1));
+        let indexOf75PercentileForFirst = Math.ceil((75 / 100) * (arrayLength - 1));
+        
+        let dataSet = {};
+        dataSet["upperHinge"] = arrayWithSinglePropertyValues[indexOf75PercentileForFirst];
+        dataSet["lowerHinge"] = arrayWithSinglePropertyValues[indexOf25PercentileForFirst];
+        dataSet["hspread"] = dataSet["upperHinge"] - dataSet["lowerHinge"];
+        dataSet["step"] = 1.5 * dataSet["hspread"];
+        dataSet["upperInnerFence"] = dataSet["upperHinge"] + dataSet["step"];
+
+        dataSet["upperOuterFence"] = dataSet["upperHinge"] + (dataSet["step"] * 2);
+        dataSet["lowerInnerFence"] = dataSet["lowerHinge"] - (dataSet["step"]);
+        dataSet["lowerOuterFence"] = dataSet["lowerHinge"] - (dataSet["step"] * 2)
+                
+        let arrayToModify = arrayWithSinglePropertyValues;
+        
+        arrayToModify.push(dataSet["upperInnerFence"]);
+        arrayToModify.push(dataSet["lowerInnerFence"]);
+        arrayToModify.push(dataSet["upperOuterFence"]);
+        arrayToModify.push(dataSet["lowerOuterFence"]);
+
+        let sortedModifiedArray = simpleArrayMergeSort(arrayToModify);
+
+        let indexOfUpperAdj = sortedModifiedArray.indexOf(dataSet["upperInnerFence"]) - 1;
+        let indexOfLowerAdj = sortedModifiedArray.indexOf(dataSet["lowerInnerFence"]) + 1;
+
+        let indexOfUpperOuterFence = sortedModifiedArray.indexOf(dataSet["upperOuterFence"]);
+        let indexOfLowerOuterFence = sortedModifiedArray.indexOf(dataSet["lowerOuterFence"]);
+            
+        let outsideUpperValues = sortedModifiedArray.slice(indexOfUpperAdj + 1, indexOfUpperOuterFence);
+        let outsideLowerValues = sortedModifiedArray.slice(indexOfLowerOuterFence, indexOfLowerAdj - 1);
+
+        let farOutUpperValues = null;
+        if (indexOfUpperOuterFence < sortedModifiedArray.length - 1){
+            farOutUpperValues = sortedModifiedArray.slice(indexOfUpperOuterFence + 1)
+        }
+
+        let farOutLowerValues = null;
+        if (indexOfLowerOuterFence > 0){
+            farOutLowerValues = sortedModifiedArray.slice(0, indexOfLowerOuterFence)
+        }
+
+        dataSet["upperAdj"] = sortedModifiedArray[indexOfUpperAdj];
+        dataSet["lowerAdj"] = sortedModifiedArray[indexOfLowerAdj];
+        dataSet["outsideUpperValues"] = outsideUpperValues;
+        dataSet["outsideLowerValues"] = outsideLowerValues;
+        dataSet["farOutUpperValues"] = farOutUpperValues;
+        dataSet["farOutLowerValues"] = farOutLowerValues;
+
+        console.log("box plot for nested", dataSet);
+        return dataSet;
+    }
+
+    function trimean(unSortedArray, weight25=1, weight50=1, weight75=1){
+
+        const targetArray = unSortedArray;
+        let sortedSimpleArray = simpleArrayMergeSort(targetArray);
+        const arrayLength = sortedSimpleArray.length
+
+        const indexOf25Percentile = Math.ceil((25 / 100) * (arrayLength - 1));
+        const indexOf50Percentile = Math.ceil((50 / 100) * (arrayLength - 1));
+        const indexOf75Percentile = Math.ceil((75 / 100) * (arrayLength - 1));
+
+        const sumOfWeight = weight25 + weight50 + weight75;
+        
+        const trimean = (sortedSimpleArray[indexOf25Percentile] * weight25 + sortedSimpleArray[indexOf50Percentile] * weight50 + sortedSimpleArray[indexOf75Percentile] * weight75) / sumOfWeight
+        console.log(trimean);
+        return trimean;
+
+    }
 
 
 
@@ -429,7 +498,10 @@ module.exports={
     standardDeviationForNestedProperty,
     rangeOfArrayOfObjects,
     simpleRange,
-    
+    boxPlotForNestedArray,
+    simpleNominalBoxPlot,
+    linearRegressionOneUnitTimeDistance,
+    trimean
 }
 
 const sampleArray = [
@@ -439,11 +511,11 @@ const sampleArray = [
     { "first": 18, "second": 28, "third": 38, "fourth": 48 }
     ];
 
-    const simpleSampleArray = [
-        47, 82, 15, 33, 69,
-        28, 91, 56, 10, 72,
-        39, 23, 58, 41, 79,
-        64, 12, 53, 86, 97
-    ];
+const simpleSampleArray = [
+    47, 82, 15, 33, 69,
+    28, 91, 56, 10, 72,
+    39, 23, 58, 41, 79,
+    64, 12, 53, 86, 97
+];
 
-    simpleNominalBoxPlot(simpleSampleArray);
+trimean(simpleSampleArray, 2, 1, 2)
