@@ -339,87 +339,74 @@
         return range;
     }
 
-    // function dissectingAFunction(unsortedArray1, unsortedArray2){
-    //     console.log("arguments.callee", arguments.callee);
-    //     console.log("arguments.callee.name", arguments.callee.name);
-    //     console.log("arguments.callee.arguments", arguments.callee.arguments);
-    // }
-
-
-    // Need to finish up and test and also refactor ---> got alot of wasted codes, need to create output
-    function simpleTwoNominalCategoryBoxPlot(unsortedArray1, unsortedArray2){
+    function simpleNominalBoxPlot(unsortedArray1){
 
         let array1 = unsortedArray1;
-        let array2 = unsortedArray2;
 
         let sortedArray1 = simpleArrayMergeSort(array1);
-        let sortedArray2 = simpleArrayMergeSort(array2);
 
         let arrayLength1 = sortedArray1.length;
-        let arrayLength2 = sortedArray2.length;
 
         let indexOf25PercentileForFirst = Math.ceil((25 / 100) * (arrayLength1 - 1));
-        let indexOf50PercentileForFirst = Math.ceil((50 / 100) * (arrayLength1 - 1));
         let indexOf75PercentileForFirst = Math.ceil((75 / 100) * (arrayLength1 - 1));
 
         let median1 = median(sortedArray1);
-        let median2 = median(sortedArray2);
         
-        // for first array 
         let dataSet1 = {};
-        dataSet1[upperHinge] = sortedArray1[indexOf75PercentileForFirst];
-        dataSet1[lowerHinge] = sortedArray1[indexOf25PercentileForFirst];
-        dataSet1[hspread] = dataSet1[upperHinge1] - dataSet1[lowerHinge1];
-        dataSet1[step] = 1.5 * dataSet1[hspread];
-        dataSet1[upperInnerFence] = dataSet1[upperHinge] + dataSet1[step];
-        dataSet1[upperOuterFence] = dataSet1[upperHinge] + (dataSet1[step] * 2)
-        dataSet1[lowerInnerFence] = dataSet1[lowerHinge] - (dataSet1[step])
-        dataSet1[lowerOuterFence] = dataSet1[lowerHinge] - (dataSet1[step] * 2)
+        dataSet1["median"] = median1;
+        dataSet1["upperHinge"] = sortedArray1[indexOf75PercentileForFirst];
+        dataSet1["lowerHinge"] = sortedArray1[indexOf25PercentileForFirst];
+        dataSet1["hspread"] = dataSet1["upperHinge"] - dataSet1["lowerHinge"];
+        dataSet1["step"] = 1.5 * dataSet1["hspread"];
+        dataSet1["upperInnerFence"] = dataSet1["upperHinge"] + dataSet1["step"];
+        dataSet1["upperOuterFence"] = dataSet1["upperHinge"] + (dataSet1["step"] * 2)
+        dataSet1["lowerInnerFence"] = dataSet1["lowerHinge"] - (dataSet1["step"])
+        dataSet1["lowerOuterFence"] = dataSet1["lowerHinge"] - (dataSet1["step"] * 2)
+                
+        let arrayToModify = sortedArray1;
         
-        let processedDataHolder = [];
-        let valueFinder = (sortedArray, dataSet) => {
-            let arrayToModify = sortedArray;
-            arrayToModify.push(dataSet[upperInnerFence]);
-            arrayToModify.push(dataSet[lowerInnerFence]);
-            arrayToModify.push(dataSet[upperOuterFence]);
-            arrayToModify.push(dataSet[lowerOuterFence]);
+        arrayToModify.push(dataSet1["upperInnerFence"]);
+        arrayToModify.push(dataSet1["lowerInnerFence"]);
+        arrayToModify.push(dataSet1["upperOuterFence"]);
+        arrayToModify.push(dataSet1["lowerOuterFence"]);
 
-            let sortedModifiedArray = simpleArrayMergeSort(arrayToModify);
-            let indexOfUpperAdj = sortedModifiedArray.indexOf(dataSet[upperInnerFence]) - 1;
-            let indexOfLowerAdj = sortedModifiedArray.indexOf(dataSet[lowerInnerFence]) + 1;
+        let sortedModifiedArray = simpleArrayMergeSort(arrayToModify);
 
-            let indexOfUpperOuterFence = sortedModifiedArray.indexOf(dataSet[upperOuterFence]);
-            let indexOfLowerOuterFence = sortedModifiedArray.indexOf(dataSet[lowerOuterFence]);
+        let indexOfUpperAdj = sortedModifiedArray.indexOf(dataSet1["upperInnerFence"]) - 1;
+        console.log("length here", sortedModifiedArray.length)
+        console.log("index of upper adj here", indexOfUpperAdj);
+        let indexOfLowerAdj = sortedModifiedArray.indexOf(dataSet1["lowerInnerFence"]) + 1;
+        console.log("index of lower adj here", indexOfLowerAdj)
+
+        let indexOfUpperOuterFence = sortedModifiedArray.indexOf(dataSet1["upperOuterFence"]);
+        console.log("index of upper outer fence", indexOfUpperOuterFence);
+        let indexOfLowerOuterFence = sortedModifiedArray.indexOf(dataSet1["lowerOuterFence"]);
+        console.log("index of lower outer fence", indexOfLowerOuterFence);
             
-            let outsideUpperValues = sortedModifiedArray.slice(indexOfUpperAdj + 2, indexOfUpperOuterFence);
-            let outsideLowerValues = sortedModifiedArray.slice(indexOfLowerOuterFence, indexOfLowerAdj - 1);
+        let outsideUpperValues = sortedModifiedArray.slice(indexOfUpperAdj + 1, indexOfUpperOuterFence);
+        console.log("outside upper values", outsideUpperValues);
+        let outsideLowerValues = sortedModifiedArray.slice(indexOfLowerOuterFence, indexOfLowerAdj - 1);
+        console.log("outside lower values", outsideLowerValues);
 
-            let farOutUpperValues = null;
-            if (indexOfUpperOuterFence !== sortedModifiedArray.length - 1){
-                farOutUpperValues = sortedModifiedArray.slice(indexOfUpperOuterFence + 1)
-            }
-
-            let farOutLowerValues = null;
-            if (indexOfLowerOuterFence !== 0){
-                farOutLowerValues = sortedModifiedArray.slice(0, indexOfLowerOuterFence)
-            }
-
-            dataSet[upperAdj] = sortedModifiedArray[indexOfUpperAdj];
-            dataSet[lowerAdj] = sortedModifiedArray[indexOfLowerAdj];
-            dataSet[outsideUpperValues] = sortedModifiedArray[outsideUpperValues];
-            dataSet[outsideLowerValues] = sortedModifiedArray[outsideLowerValues];
-            dataSet[farOutUpperValues] = farOutUpperValues;
-            dataSet[farOutLowerValues] = farOutLowerValues;
-
-            processedDataHolder.push(dataSet);
+        let farOutUpperValues = null;
+        if (indexOfUpperOuterFence < sortedModifiedArray.length - 1){
+            farOutUpperValues = sortedModifiedArray.slice(indexOfUpperOuterFence + 1)
         }
 
-        
+        let farOutLowerValues = null;
+        if (indexOfLowerOuterFence > 0){
+            farOutLowerValues = sortedModifiedArray.slice(0, indexOfLowerOuterFence)
+        }
 
-        // for second array
+        dataSet1["upperAdj"] = sortedModifiedArray[indexOfUpperAdj];
+        dataSet1["lowerAdj"] = sortedModifiedArray[indexOfLowerAdj];
+        dataSet1["outsideUpperValues"] = outsideUpperValues;
+        dataSet1["outsideLowerValues"] = outsideLowerValues;
+        dataSet1["farOutUpperValues"] = farOutUpperValues;
+        dataSet1["farOutLowerValues"] = farOutLowerValues;
 
-
-
+        console.log(dataSet1);
+        return dataSet1;
     }
 
 
@@ -459,4 +446,4 @@ const sampleArray = [
         64, 12, 53, 86, 97
     ];
 
-    dissectingAFunction(sampleArray, simpleSampleArray);
+    simpleNominalBoxPlot(simpleSampleArray);
