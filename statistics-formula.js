@@ -218,6 +218,19 @@
         return mean;
     }
 
+    function meanOfTargetedProperty(arrayOfObjects, targetedProperty){
+        
+        let targetArrayOfObjects = arrayOfObjects;
+        let totalForMeanCalc = 0;
+        for (let i=0; i < targetArrayOfObjects.length; i++){
+            totalForMeanCalc += targetArrayOfObjects[i][targetedProperty];
+        }
+        let meanOfTargetProperty = totalForMeanCalc / targetArrayOfObjects.length;
+        
+        console.log(`mean of targeted property ${targetedProperty}`, meanOfTargetProperty);
+        return meanOfTargetProperty;
+    }
+
     function median (arrayOfData){
 
         let targetArray = arrayOfData;
@@ -543,6 +556,62 @@
         return geometricalMean;
     }
 
+    function simpleSampleVariance(unsortedArray){
+        let targetArray = unsortedArray;
+        let sortedSimpleArray = simpleArrayMergeSort(targetArray);
+        let arithMean = mean(sortedSimpleArray);
+        let accumulator = 0;
+        for (let element of sortedSimpleArray){
+            accumulator += ((element - arithMean)**2)
+        }
+        let sampleVariance = accumulator / (sortedSimpleArray.length - 1);
+        console.log("Simple Sample variance is: ", sampleVariance);
+        return sampleVariance;
+    }
+
+    function nestedSampleVariance(unSortedObjectArray, targetedProperty){
+        let targetArray = unSortedObjectArray;
+        let sortedArrayOfObjects = mergeSortByProperty(unSortedObjectArray, targetedProperty);
+        let arithMean = meanOfTargetedProperty(sortedArrayOfObjects, targetedProperty);
+        let accumulator = 0;
+        for (let i=0; i < targetArray.length; i++){
+            accumulator += ((sortedArrayOfObjects[i][targetedProperty] - arithMean) **2)
+        }
+        let sampleVariance = accumulator / (sortedArrayOfObjects.length - 1)
+        console.log("sample variance of nested property value: ", sampleVariance);
+        return sampleVariance;
+    }
+
+    function fractionOfVarianceUnexplained(arrayOfPredictedValues, arrayOfObservedValues){
+        if (arrayOfObservedValues.length !== arrayOfPredictedValues.length){
+            console.log("mismatch number of values in arrays");
+            return;
+        }
+
+        let sumOfSquaredErrors = 0;
+        for (let i=0; i<arrayOfPredictedValues.length; i++){
+            sumOfSquaredErrors += ((arrayOfObservedValues[i] - arrayOfPredictedValues[i])**2);
+        }
+
+        const arithMeanOfObserved = mean(arrayOfObservedValues);
+
+        let totalSumOfSquares = 0;
+        for (let i=0; i<arrayOfPredictedValues.length; i++){
+            totalSumOfSquares += ((arrayOfObservedValues[i] - arithMeanOfObserved)**2)
+        }
+
+        const fractionOfVarianceUnexplained = sumOfSquaredErrors / totalSumOfSquares;
+        console.log("Fraction of Variance Unexplained (FVU): ", fractionOfVarianceUnexplained);
+        return fractionOfVarianceUnexplained;        
+    }
+
+
+    function kalmanFiltering(){
+
+    }
+    
+
+
 module.exports={
     checkProperty,
     mergeSortByProperty,
@@ -553,8 +622,11 @@ module.exports={
     retrieveIndexByPercentile,
     sumOfArray,
     mean,
+    meanOfTargetedProperty,
     median,
     mode,
+    simpleSampleVariance,
+    nestedSampleVariance,
     standardDeviationPopulation,
     standardDeviationSample,
     standardDeviationForNestedProperty,
@@ -565,7 +637,9 @@ module.exports={
     linearRegressionOneUnitTimeDistance,
     trimean,
     trimeanWithProperty,
-    geometricMean
+    geometricMean,
+    geometricMeanWithProperty,
+    fractionOfVarianceUnexplained
 }
 
 const sampleArray = [
@@ -582,4 +656,11 @@ const simpleSampleArray = [
     64, 12, 53, 86, 97
 ];
 
-geometricMeanWithProperty(sampleArray, "fourth");
+const predictionArrayWithError = [
+    49, 80, 18, 29, 67,
+    33, 92, 53, 13, 75,
+    43, 25, 62, 37, 81,
+    69, 15, 52, 81, 95
+];
+
+fractionOfVarianceUnexplained(predictionArrayWithError, simpleSampleArray);
