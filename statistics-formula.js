@@ -605,10 +605,67 @@
         return fractionOfVarianceUnexplained;        
     }
 
+    function arrayOfReturns (unsortedArray){
+        
+        let targetArray = unsortedArray;
+        let arrayOfReturns = [];
+        let currentRate = 0;
+        for (let i=0; i < targetArray.length - 1; i++){
+            currentRate = targetArray[i+1] / targetArray[i];
 
-    function kalmanFiltering(){
+            console.log("current rate here: ", currentRate);
+            arrayOfReturns.push(currentRate);
+        }
 
+        console.log("array of returns here", arrayOfReturns)
+        return arrayOfReturns;
     }
+
+    function averageGeometricRateOfReturns(unsortedArray, startIndex=0){
+
+        let targetArray = unsortedArray;
+        let targetPortionOfPerformance = targetArray.slice(startIndex);
+        
+        let arrayOfSingleTimeUnitReturns = arrayOfReturns(targetPortionOfPerformance);
+        let geometricRateOfReturns = geometricMean(arrayOfSingleTimeUnitReturns);
+        let numberOfTimeWithIncrementOrDecrement = targetPortionOfPerformance.length - 1;
+
+        console.log("Geometric Rate of Return per time unit: ", geometricRateOfReturns);
+        console.log("Number of discrete time units involved in increment and decrement", numberOfTimeWithIncrementOrDecrement);
+        return geometricRateOfReturns;
+    }
+
+    function trimmedMean(unsortedArray, startTrim=10, endTrim=90){
+        let sortedArray = simpleArrayMergeSort(unsortedArray);
+        let arrayLength = sortedArray.length;
+        let indexOfStartTrim = Math.ceil((startTrim / 100) * (arrayLength - 1));
+        let indexOfEndTrim = Math.ceil((endTrim / 100) * (arrayLength - 1));
+        let trimmedArray = sortedArray.slice(indexOfStartTrim, indexOfEndTrim);
+        let trimmedMean = mean(trimmedArray);
+        console.log(`trimmed mean of ${startTrim}th and ${endTrim}th percentile to remove outlier`, trimmedMean);
+        return trimmedMean;
+    }
+
+    function indexOfPercentileSimpleArray(unsortedArray, percentile){
+        let sortedArray = simpleArrayMergeSort(unsortedArray);
+        let arrayLength = sortedArray.length;
+        let indexOfPercentile = Math.ceil((percentile/100) * (arrayLength-1));
+        console.log(`Index of percentile ${percentile} is: ${indexOfPercentile}. Its value is ${sortedArray[indexOfPercentile]}`);
+        return indexOfPercentile;
+    }
+
+    // function interQuartileRange(unsortedArray){
+
+    //     let lowerPercentileIndex = indexOfPercentileSimpleArray(unsortedArray, 25);
+    //     let upperPercentileIndex = indexOfPercentileSimpleArray(unsortedArray, 75);
+    //     let interquartileRange = sortedArray[upperPercentileIndex] - sortedArray[lowerPercentileIndex];
+    //     console.log(interquartileRange);
+    // }    
+
+
+    // function kalmanFiltering(){
+
+    // }
     
 
 
@@ -639,7 +696,11 @@ module.exports={
     trimeanWithProperty,
     geometricMean,
     geometricMeanWithProperty,
-    fractionOfVarianceUnexplained
+    fractionOfVarianceUnexplained,
+    arrayOfReturns,
+    averageGeometricRateOfReturns,
+    trimmedMean,
+    indexOfPercentileSimpleArray
 }
 
 const sampleArray = [
@@ -663,4 +724,5 @@ const predictionArrayWithError = [
     69, 15, 52, 81, 95
 ];
 
-fractionOfVarianceUnexplained(predictionArrayWithError, simpleSampleArray);
+
+interQuartileRange(sampleArray);
